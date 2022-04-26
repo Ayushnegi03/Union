@@ -1,0 +1,44 @@
+#Union Algorithem using python
+#A disjoint-set data structure is a data structure that keeps track of a set of elements partitioned into a number of disjoint (non-overlapping) subsets.
+#A union-find algorithm is an algorithm that performs two useful operations on such a data structure: 
+from collections import defaultdict
+class Graph:  
+    def __init__(self,Vertices):
+        self.V= Vertices #Number of vertices.
+        self.graph = defaultdict(list) # Default dictionary to store graph
+    # Function to add an edge to graph
+    def addEdge(self,a,b):
+        self.graph[a].append(b)  
+    # A utility function to find the subset of an element i
+    def find_parent(self, Parent,i):
+        if Parent[i] == -1:
+            return i
+        if Parent[i]!= -1:
+             return self.find_parent(Parent,Parent[i]) 
+    # A utility function to do union of two subsets
+    def union(self,Parent,a,b):
+        Parent[a] = b
+    def isitCyclic(self):
+        Parent = [-1]*(self.V)
+        for i in self.graph:
+            for j in self.graph[i]:
+                x = self.find_parent(Parent, i)
+                y = self.find_parent(Parent, j)
+                if x == y:
+                    return True
+                self.union(Parent,x,y)
+g = Graph(7)
+g.addEdge(0, 1)
+g.addEdge(1, 2)
+g.addEdge(2, 3)
+g.addEdge(3, 4)
+g.addEdge(4, 5)
+g.addEdge(5, 6)
+g.addEdge(6, 0)
+if g.isitCyclic():
+    print ("This graph contains cycle")
+else :
+    print ("This graph does not contain cycle ")
+#Output-
+#This graph contains cycle
+    
