@@ -1,0 +1,84 @@
+//Union Algorithem 
+// It merges two different subsets into a single subset and representative of one set becomes representative of other.
+#include <iostream>
+using namespace std;
+struct Edge 
+{
+    int SRC, Dest;
+};
+struct Graph 
+{
+    int V, E;
+    struct Edge* edge;
+};
+struct subset 
+{
+    int Parent;
+    int Rank;
+};
+struct Graph* createGraph(int V, int E)
+{
+    struct Graph* graph = (struct Graph*)malloc(sizeof(struct Graph));
+    graph->V = V;
+    graph->E = E;
+    graph->edge = (struct Edge*)malloc(graph->E * sizeof(struct Edge));
+    return graph;
+}
+int find(struct subset subsets[], int i)
+{
+    if (subsets[i].Parent != i)
+        subsets[i].Parent = find(subsets, subsets[i].Parent);
+    return subsets[i].Parent;
+}
+void Union(struct subset subsets[], int xroot, int yroot)
+{
+    if (subsets[xroot].Rank < subsets[yroot].Rank)
+        subsets[xroot].Parent = yroot;
+    else if (subsets[xroot].Rank > subsets[yroot].Rank)
+        subsets[yroot].Parent = xroot;
+    else {
+        subsets[yroot].Parent = xroot;
+        subsets[xroot].Rank++;
+    }
+}
+int isCycle(struct Graph* graph)
+{
+    int V = graph->V;
+    int E = graph->E;
+    struct subset* subsets = (struct subset*)malloc(V * sizeof(struct subset));
+    for (int v = 0; v < V; ++v) {
+        subsets[v].Parent = v;
+        subsets[v].Rank = 0;
+    }
+    for (int e = 0; e < E; ++e) {
+        int x = find(subsets, graph->edge[e].SRC);
+        int y = find(subsets, graph->edge[e].Dest);
+        if (x == y)
+            return 1;
+        Union(subsets, x, y);
+    }
+    return 0;
+}
+int main()
+{
+    int V = 3, E = 3;
+    struct Graph* graph = createGraph(V, E);
+    graph->edge[0].SRC = 0;
+    graph->edge[0].Dest = 1;
+    graph->edge[1].SRC = 1;
+    graph->edge[1].Dest = 2;
+    graph->edge[2].SRC = 0;
+    graph->edge[2].Dest = 2;
+    if (isCycle(graph))
+        cout << "Graph contains cycle";
+    else
+        cout << "Graph doesn't contain cycle";
+    return 0;
+}
+//Output-
+/* Let us create the following graph
+         0
+        |  \
+        |    \
+        1-----2 */
+//Graph contains cycle        
